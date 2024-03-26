@@ -1,0 +1,41 @@
+#!/usr/bin/env python3.8
+import os
+import socket
+
+import prettytable
+import telebot
+from telebot.types import BotCommand, Message
+
+from vpngate_bot.constants import WELCOME_MESSAGE_TEMPLATE, IP, COUNTRYLONG
+from vpngate_bot.utils import get_vpngate_csv
+
+bot = telebot.TeleBot(token=os.environ.get("TELEGRAM_TOKEN"), parse_mode="Markdown")
+bot.set_my_commands(
+    [
+        BotCommand("start", description="Start using bot."),
+        BotCommand("get", description="Get server list."),
+    ]
+)
+
+
+@bot.message_handler(commands=["start"], content_types=["text"])
+def handle_start(message: Message):
+    bot.send_message(chat_id=message.chat.id, text=WELCOME_MESSAGE_TEMPLATE)
+
+
+@bot.message_handler(commands=["get"], content_types=["text"])
+def handle_get(message: Message):
+    table = prettytable.PrettyTable(field_names=["Country", "IP",])
+    for row in get_vpngate_csv()[:60]:
+        table.add_row([row[COUNTRYLONG], row[IP]])
+    bot.send_message(chat_id=message.chat.id, text=f"```{table}```")
+
+
+if __name__ == "__main__":
+    get_vpngate_csv()
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    soc = os.environ.get("/run/systemd/notify")
+    s.connect(soc)
+    s.sendall(b"READY=1")
+    s.close()
+    bot.infinity_polling(skip_pending=True)
