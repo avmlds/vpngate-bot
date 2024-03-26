@@ -34,8 +34,7 @@ def handle_get(message: Message):
 if __name__ == "__main__":
     get_vpngate_csv()
     s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-    soc = os.environ.get("/run/systemd/notify")
-    s.connect(soc)
+    s.connect("/run/systemd/notify")
     s.sendall(b"READY=1")
     s.close()
     bot.infinity_polling(skip_pending=True)
