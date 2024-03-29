@@ -37,4 +37,4 @@ if __name__ == "__main__":
     s.connect("/run/systemd/notify")
     s.sendall(b"READY=1")
     s.close()
-    bot.infinity_polling(skip_pending=True)
+    bot.infinity_polling(skip_pending=True, allowed_updates=["message"])

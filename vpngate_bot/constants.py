@@ -37,7 +37,7 @@ vpngate.net Proxy
 
 Use L2TP/IPsec to connect to a VPN server.
 Login and password are: `vpn`
-Data is updated every 2 hours.
+Data is updated every 4 hours.
 Response contains 60 server addresses sorted by score.
 To get servers use command /get
 """
